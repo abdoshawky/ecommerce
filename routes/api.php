@@ -1,6 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\CartController;
+use App\Http\Controllers\API\ItemController;
+use App\Http\Controllers\API\OrderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('items', [ItemController::class, 'index']);
+
+Route::apiResource('carts', CartController::class);
+
+Route::post('orders', [OrderController::class, 'store']);
