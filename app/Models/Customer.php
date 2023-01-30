@@ -18,4 +18,10 @@ class Customer extends Model
     {
         return $this->hasMany(Cart::class);
     }
+
+    public function addStoreCredits(int $amount)
+    {
+        $this->store_credits += $amount;
+        $this->save();
+    }
 }
