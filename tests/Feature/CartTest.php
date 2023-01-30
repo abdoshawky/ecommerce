@@ -59,6 +59,34 @@ class CartTest extends TestCase
     /**
      * @test
      */
+    public function it_increases_quantity_if_item_already_exists_in_cart()
+    {
+        $item = Item::factory()->create(['price' => 10]);
+        Cart::factory()->create(['customer_id' => Auth::user()->id, 'item_id' => $item->id, 'quantity' => 1]);
+
+        $response = $this->post('/api/carts', ['item_id' => $item->id, 'quantity' => 2]);
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure(
+                [
+                    'cart' => [
+                        'id',
+                        'item' => ['id', 'name', 'description', 'price'],
+                        'price'
+                    ]
+                ]
+            )
+            ->assertJson(
+                [
+                    'cart' => ['item' => ['id' => $item->id], 'quantity' => 3, 'price' => 30]
+                ]
+            );
+    }
+
+    /**
+     * @test
+     */
     public function it_can_update_cart()
     {
         $item = Item::factory()->create(['price' => 10]);

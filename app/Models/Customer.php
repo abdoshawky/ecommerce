@@ -24,4 +24,10 @@ class Customer extends Model
         $this->store_credits += $amount;
         $this->save();
     }
+
+    public function removeStoreCredits(int $amount)
+    {
+        $this->store_credits -= $amount;
+        $this->save();
+    }
 }

@@ -8,10 +8,20 @@ use App\Http\Requests\AddItemToCartRequest;
 use App\Http\Requests\UpdateCartRequest;
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
+use App\Models\Item;
+use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
 
 class CartController extends Controller
 {
+
+    private CartService $cartService;
+
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
+
     public function index(): JsonResponse
     {
         $customer = Auth::user()->load('carts.item');
@@ -27,13 +37,9 @@ class CartController extends Controller
 
     public function store(AddItemToCartRequest $request): JsonResponse
     {
-        $cart = Auth::user()->carts()->where('item_id', $request->item_id)->first();
-        if ($cart) {
-            $cart->quantity += $request->quantity;
-            $cart->save();
-        } else {
-            $cart = Auth::user()->carts()->create($request->validated());
-        }
+        $item = Item::findOrFail($request->item_id);
+        $customer = Auth::user();
+        $cart = $this->cartService->addItemToCart($item, $customer, $request->quantity);
 
         return response()->json(['cart' => CartResource::make($cart)]);
     }

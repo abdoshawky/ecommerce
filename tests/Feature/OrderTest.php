@@ -23,20 +23,21 @@ class OrderTest extends TestCase
 
         $response
             ->assertStatus(200);
+
+        $this->assertEquals(0, $customer->carts()->count());
     }
 
     /**
      * @test
      */
-    public function it_throw_exception_if_not_enough_credit()
+    public function it_returns_validation_error_if_not_enough_credit()
     {
         $customer = Auth::user();
         $item = Item::factory()->create(['price' => 200]);
         Cart::factory()->create(['item_id' => $item->id, 'customer_id' => $customer->id]);
 
-        $response = $this->post('/api/orders', ['address' => "test address", "telephone" => "0123456789"]);
+        $response = $this->postJson('/api/orders', ['address' => "test address", "telephone" => "0123456789"]);
 
-        $response
-            ->assertStatus(400);
+        $response->assertStatus(400);
     }
 }
